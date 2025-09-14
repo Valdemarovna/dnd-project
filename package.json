@@ -24,5 +24,6 @@
         "predeploy": "npm run build",
 		"deploy": "gh-pages -d dist"
     },
+	"homepage": "https://valdemarovna.github.io/dnd-project/",
     "version": "1.0.0"
 }
