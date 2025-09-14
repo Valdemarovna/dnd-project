@@ -35,6 +35,7 @@ export function initApp() {
         // Предотвращаем стандартное поведение
         e.preventDefault();
     console.log('Приложение инициализировано успешно!');
+	});
 }
 
 function setupModalEventListeners() {
