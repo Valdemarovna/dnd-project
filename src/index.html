@@ -8,75 +8,52 @@
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <div class="header-left">
-                <div class="logo">
-                    <i class="fab fa-trello"></i>
-                    <span>Trello</span>
+        <div class="board" id="board">
+            <!-- Колонка TODO -->
+            <div class="column" id="todo">
+                <div class="column-header">
+                    <h3><i class="fas fa-list-ul"></i> TODO</h3>
+                </div>
+                <div class="tasks" id="tasks-todo" ondragover="onDragOver(event)" ondrop="onDrop(event, 'todo')">
+                    <!-- Карточки будут добавляться здесь -->
+                </div>
+                <div class="add-card">
+                    <button class="add-card-btn" onclick="showAddCardModal('todo')">
+                        <i class="fas fa-plus"></i> Добавить карточку
+                    </button>
                 </div>
             </div>
-            <div class="header-right">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
+
+            <!-- Колонка In Progress -->
+            <div class="column" id="in-progress">
+                <div class="column-header">
+                    <h3><i class="fas fa-spinner"></i> In Progress</h3>
+                </div>
+                <div class="tasks" id="tasks-progress" ondragover="onDragOver(event)" ondrop="onDrop(event, 'in-progress')">
+                    <!-- Карточки будут добавляться здесь -->
+                </div>
+                <div class="add-card">
+                    <button class="add-card-btn" onclick="showAddCardModal('in-progress')">
+                        <i class="fas fa-plus"></i> Добавить карточку
+                    </button>
                 </div>
             </div>
-        </header>
 
-        <main class="main">
-            <div class="board-header">
-                <h1>Моя доска задач</h1>
-            </div>
-
-            <div class="board" id="board">
-                <!-- Колонка TODO -->
-                <div class="column" id="todo">
-                    <div class="column-header">
-                        <h3><i class="fas fa-list-ul"></i> TODO</h3>
-                        <span class="task-count">0 tasks</span>
-                    </div>
-                    <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event, 'todo')">
-                        <!-- Карточки будут добавляться здесь -->
-                    </div>
-                    <div class="add-card">
-                        <button class="add-card-btn" onclick="showAddCardModal('todo')">
-                            <i class="fas fa-plus"></i> Добавить карточку
-                        </button>
-                    </div>
+            <!-- Колонка Done -->
+            <div class="column" id="done">
+                <div class="column-header">
+                    <h3><i class="fas fa-check-circle"></i> Done</h3>
                 </div>
-
-                <!-- Колонка In Progress -->
-                <div class="column" id="in-progress">
-                    <div class="column-header">
-                        <h3><i class="fas fa-spinner"></i> In Progress</h3>
-                        <span class="task-count">0 tasks</span>
-                    </div>
-                    <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event, 'in-progress')">
-                        <!-- Карточки будут добавляться здесь -->
-                    </div>
-                    <div class="add-card">
-                        <button class="add-card-btn" onclick="showAddCardModal('in-progress')">
-                            <i class="fas fa-plus"></i> Добавить карточку
-                        </button>
-                    </div>
+                <div class="tasks" id="tasks-done" ondragover="onDragOver(event)" ondrop="onDrop(event, 'done')">
+                    <!-- Карточки будут добавляться здесь -->
                 </div>
-
-                <!-- Колонка Done -->
-                <div class="column" id="done">
-                    <div class="column-header">
-                        <h3><i class="fas fa-check-circle"></i> Done</h3>
-                        <span class="task-count">0 tasks</span>
-                    </div>
-                    <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event, 'done')">
-                        <!-- Карточки будут добавляться здесь -->
-                    </div>
-                    <div class="add-card">
-                        <button class="add-card-btn" onclick="showAddCardModal('done')">
-                            <i class="fas fa-plus"></i> Добавить карточку
-                        </button>
-                    </div>
+                <div class="add-card">
+                    <button class="add-card-btn" onclick="showAddCardModal('done')">
+                        <i class="fas fa-plus"></i> Добавить карточку
+                    </button>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <!-- Модальное окно добавления карточки -->
@@ -125,5 +102,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Placeholder для Drag&Drop -->
+    <div class="drop-placeholder" id="drop-placeholder" style="display: none;"></div>
 </body>
 </html>

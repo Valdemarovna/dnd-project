@@ -1,5 +1,5 @@
 import { createTask, addCard, showAddCardModal, hideAddCardModal, showEditCardModal, hideEditCardModal, saveCardEdit, deleteCard } from './card.js';
-import { onDragStart, onDragOver, onDrop } from './dnd.js';
+import { onDragStart, onDragOver, onDrop, onDragLeave } from './dnd.js';
 
 // Глобальные переменные
 let currentColumn = null;
@@ -10,6 +10,7 @@ export function initApp() {
     window.onDragStart = onDragStart;
     window.onDragOver = onDragOver;
     window.onDrop = onDrop;
+    window.onDragLeave = onDragLeave;
     window.showAddCardModal = showAddCardModal;
     window.hideAddCardModal = hideAddCardModal;
     window.addCard = addCard;
@@ -25,6 +26,12 @@ export function initApp() {
             const text = task.querySelector('.task-text').textContent;
             showEditCardModal(task, text);
         }
+    });
+
+    // Добавляем обработчики dragleave для всех контейнеров
+    const tasksContainers = document.querySelectorAll('.tasks');
+    tasksContainers.forEach(container => {
+        container.addEventListener('dragleave', onDragLeave);
     });
 
     // Добавляем несколько начальных задач
@@ -45,8 +52,6 @@ function addInitialTasks() {
         const taskElement = createTask(task.text);
         document.querySelector(`#${task.column} .tasks`).appendChild(taskElement);
     });
-
-    updateTaskCounts();
 }
 
 export function updateTaskCounts() {
