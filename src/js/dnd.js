@@ -1,105 +1,179 @@
 import { updateTaskCounts } from './app.js';
 
 let draggedItem = null;
-let placeholder = null;
+let dragPreview = null;
+let currentDropTarget = null;
 
 export function onDragStart(event) {
     draggedItem = event.target;
-    event.target.classList.add('dragging');
+    draggedItem.classList.add('dragging');
     
-    // Создаем placeholder
-    placeholder = document.createElement('div');
-    placeholder.className = 'drop-placeholder';
-    placeholder.style.height = `${draggedItem.offsetHeight}px`;
+    // Создаем preview элемент
+    dragPreview = draggedItem.cloneNode(true);
+    dragPreview.classList.add('drag-preview');
+    dragPreview.style.position = 'absolute';
+    dragPreview.style.width = `${draggedItem.offsetWidth}px`;
+    dragPreview.style.opacity = '0.8';
+    dragPreview.style.zIndex = '1000';
+    dragPreview.style.pointerEvents = 'none';
+    document.body.appendChild(dragPreview);
     
     // Устанавливаем данные для переноса
-    event.dataTransfer.setData('text/plain', event.target.id);
+    event.dataTransfer.setData('text/plain', '');
     event.dataTransfer.effectAllowed = 'move';
+    
+    // Скрываем оригинальный элемент
+    setTimeout(() => {
+        draggedItem.style.opacity = '0';
+    }, 0);
 }
 
 export function onDragOver(event) {
     event.preventDefault();
     
+    if (!draggedItem) return;
+    
+    // Обновляем позицию preview
+    updateDragPreview(event);
+    
     const tasksContainer = event.target.closest('.tasks');
-    if (!tasksContainer || !draggedItem) return;
+    if (!tasksContainer) return;
+    
+    // Добавляем класс для подсветки контейнера
+    tasksContainer.classList.add('drag-over');
+    currentDropTarget = tasksContainer;
+    
+    // Удаляем старые индикаторы
+    removeAllIndicators();
     
     // Определяем позицию для вставки
-    const afterElement = getDragAfterElement(tasksContainer, event.clientY);
+    const { position, element } = getDropPosition(tasksContainer, event.clientY);
     
-    // Удаляем старый placeholder
-    const oldPlaceholder = tasksContainer.querySelector('.drop-placeholder');
-    if (oldPlaceholder) {
-        oldPlaceholder.remove();
-    }
-    
-    // Вставляем placeholder в нужную позицию
-    if (afterElement == null) {
-        tasksContainer.appendChild(placeholder);
-        placeholder.className = 'drop-placeholder after';
-    } else {
-        tasksContainer.insertBefore(placeholder, afterElement);
-        placeholder.className = 'drop-placeholder before';
-    }
-    
-    // Подсвечиваем контейнер
-    tasksContainer.style.background = 'rgba(255, 255, 255, 0.8)';
+    // Создаем визуальный индикатор
+    createDropIndicator(tasksContainer, position, element);
 }
 
 export function onDrop(event, columnId) {
     event.preventDefault();
     
+    if (!draggedItem) return;
+    
     const tasksContainer = event.target.closest('.tasks');
-    if (!tasksContainer || !draggedItem) return;
+    if (!tasksContainer) return;
     
     // Определяем позицию для вставки
-    const afterElement = getDragAfterElement(tasksContainer, event.clientY);
-    
-    // Удаляем placeholder
-    const placeholder = tasksContainer.querySelector('.drop-placeholder');
-    if (placeholder) {
-        placeholder.remove();
-    }
+    const { position, element } = getDropPosition(tasksContainer, event.clientY);
     
     // Вставляем элемент в нужную позицию
-    if (afterElement == null) {
-        tasksContainer.appendChild(draggedItem);
+    if (position === 'before' && element) {
+        tasksContainer.insertBefore(draggedItem, element);
+    } else if (position === 'after' && element) {
+        tasksContainer.insertBefore(draggedItem, element.nextSibling);
     } else {
-        tasksContainer.insertBefore(draggedItem, afterElement);
+        tasksContainer.appendChild(draggedItem);
     }
     
-    // Сбрасываем стили
-    tasksContainer.style.background = 'rgba(255, 255, 255, 0.5)';
-    draggedItem.classList.remove('dragging');
-    draggedItem = null;
-    
+    // Очищаем состояние
+    cleanupDragState();
     updateTaskCounts();
 }
 
-function getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
-    
-    return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        
-        if (offset < 0 && offset > closest.offset) {
-            return { offset: offset, element: child };
-        } else {
-            return closest;
-        }
-    }, { offset: Number.NEGATIVE_INFINITY }).element;
-}
-
-// Функция для сброса стилей при выходе из контейнера
 export function onDragLeave(event) {
     const tasksContainer = event.target.closest('.tasks');
-    if (tasksContainer) {
-        const placeholder = tasksContainer.querySelector('.drop-placeholder');
-        if (placeholder) {
-            placeholder.remove();
-        }
-        tasksContainer.style.background = 'rgba(255, 255, 255, 0.5)';
+    if (tasksContainer && !tasksContainer.contains(event.relatedTarget)) {
+        cleanupDragState();
     }
+}
+
+export function onDragEnd() {
+    cleanupDragState();
+}
+
+function updateDragPreview(event) {
+    if (!dragPreview) return;
+    
+    dragPreview.style.left = `${event.clientX + 10}px`;
+    dragPreview.style.top = `${event.clientY + 10}px`;
+}
+
+function getDropPosition(container, y) {
+    const tasks = [...container.querySelectorAll('.task:not(.dragging)')];
+    
+    if (tasks.length === 0) {
+        return { position: 'append', element: null };
+    }
+    
+    let closestElement = null;
+    let closestPosition = 'append';
+    let closestDistance = Infinity;
+    
+    tasks.forEach(task => {
+        const rect = task.getBoundingClientRect();
+        const topDistance = Math.abs(y - rect.top);
+        const bottomDistance = Math.abs(y - rect.bottom);
+        const middle = rect.top + rect.height / 2;
+        
+        if (y < middle && topDistance < closestDistance) {
+            closestDistance = topDistance;
+            closestElement = task;
+            closestPosition = 'before';
+        } else if (y >= middle && bottomDistance < closestDistance) {
+            closestDistance = bottomDistance;
+            closestElement = task;
+            closestPosition = 'after';
+        }
+    });
+    
+    return { position: closestPosition, element: closestElement };
+}
+
+function createDropIndicator(container, position, element) {
+    removeAllIndicators();
+    
+    const indicator = document.createElement('div');
+    indicator.className = `drop-indicator ${position}`;
+    
+    if (position === 'before' && element) {
+        container.insertBefore(indicator, element);
+    } else if (position === 'after' && element) {
+        if (element.nextSibling) {
+            container.insertBefore(indicator, element.nextSibling);
+        } else {
+            container.appendChild(indicator);
+        }
+    } else {
+        container.appendChild(indicator);
+    }
+}
+
+function removeAllIndicators() {
+    const indicators = document.querySelectorAll('.drop-indicator');
+    indicators.forEach(indicator => indicator.remove());
+}
+
+function cleanupDragState() {
+    // Восстанавливаем оригинальный элемент
+    if (draggedItem) {
+        draggedItem.style.opacity = '1';
+        draggedItem.classList.remove('dragging');
+    }
+    
+    // Удаляем preview
+    if (dragPreview) {
+        dragPreview.remove();
+        dragPreview = null;
+    }
+    
+    // Убираем подсветку контейнеров
+    const containers = document.querySelectorAll('.tasks');
+    containers.forEach(container => container.classList.remove('drag-over'));
+    
+    // Удаляем индикаторы
+    removeAllIndicators();
+    
+    // Сбрасываем состояние
+    draggedItem = null;
+    currentDropTarget = null;
 }
 
 // Глобальные функции
@@ -107,3 +181,4 @@ window.onDragStart = onDragStart;
 window.onDragOver = onDragOver;
 window.onDrop = onDrop;
 window.onDragLeave = onDragLeave;
+window.onDragEnd = onDragEnd;

@@ -5,6 +5,7 @@ export function createTask(text) {
     task.className = 'task';
     task.draggable = true;
     task.addEventListener('dragstart', onDragStart);
+    task.addEventListener('dragend', onDragEnd); // Добавляем обработчик завершения
     
     task.innerHTML = `
         <div class="task-text">${text}</div>

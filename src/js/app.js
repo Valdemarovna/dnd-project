@@ -1,5 +1,5 @@
 import { createTask, addCard, showAddCardModal, hideAddCardModal, showEditCardModal, hideEditCardModal, saveCardEdit, deleteCard } from './card.js';
-import { onDragStart, onDragOver, onDrop, onDragLeave } from './dnd.js';
+import { onDragStart, onDragOver, onDrop, onDragLeave, onDragEnd } from './dnd.js';
 
 // Глобальные переменные
 let currentColumn = null;
@@ -11,6 +11,7 @@ export function initApp() {
     window.onDragOver = onDragOver;
     window.onDrop = onDrop;
     window.onDragLeave = onDragLeave;
+    window.onDragEnd = onDragEnd; // Добавляем обработчик завершения
     window.showAddCardModal = showAddCardModal;
     window.hideAddCardModal = hideAddCardModal;
     window.addCard = addCard;
@@ -37,7 +38,6 @@ export function initApp() {
     // Добавляем несколько начальных задач
     addInitialTasks();
 }
-
 function addInitialTasks() {
     const initialTasks = [
         { text: 'Изучить JavaScript', column: 'todo' },
