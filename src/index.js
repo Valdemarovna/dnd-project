@@ -1,4 +1,2 @@
-import './styles/style.css';
-import { initApp } from './js/app';
-
-document.addEventListener('DOMContentLoaded', initApp);
+import './css/style.css';
+import './js/app.js';
