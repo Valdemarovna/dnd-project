@@ -21,7 +21,8 @@
         "build": "webpack --mode=production",
         "deploy": "gh-pages -d dist",
         "dev": "webpack serve --mode=development",
-        "predeploy": "npm run build"
+        "predeploy": "npm run build",
+		"deploy": "gh-pages -d dist"
     },
     "version": "1.0.0"
 }
