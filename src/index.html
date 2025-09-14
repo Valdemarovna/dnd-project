@@ -3,27 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drag and Drop</title>
+    <title>Trello-like Board</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <div class="board" id="board">
-            <div class="column" id="backlog">
-                <h2>Backlog</h2>
-                <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event)"></div>
-                <button class="add-btn" onclick="addTask('backlog')">+ Add card</button>
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fab fa-trello"></i>
+                    <span>Trello</span>
+                </div>
             </div>
-            <div class="column" id="ready">
-                <h2>Ready</h2>
-                <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event)"></div>
+            <div class="header-right">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
             </div>
-            <div class="column" id="in-progress">
-                <h2>In Progress</h2>
-                <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event)"></div>
+        </header>
+
+        <main class="main">
+            <div class="board-header">
+                <h1>Моя доска задач</h1>
             </div>
-            <div class="column" id="finished">
-                <h2>Finished</h2>
-                <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event)"></div>
+
+            <div class="board" id="board">
+                <!-- Колонка TODO -->
+                <div class="column" id="todo">
+                    <div class="column-header">
+                        <h3><i class="fas fa-list-ul"></i> TODO</h3>
+                        <span class="task-count">0 tasks</span>
+                    </div>
+                    <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event, 'todo')">
+                        <!-- Карточки будут добавляться здесь -->
+                    </div>
+                    <div class="add-card">
+                        <button class="add-card-btn" onclick="showAddCardModal('todo')">
+                            <i class="fas fa-plus"></i> Добавить карточку
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Колонка In Progress -->
+                <div class="column" id="in-progress">
+                    <div class="column-header">
+                        <h3><i class="fas fa-spinner"></i> In Progress</h3>
+                        <span class="task-count">0 tasks</span>
+                    </div>
+                    <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event, 'in-progress')">
+                        <!-- Карточки будут добавляться здесь -->
+                    </div>
+                    <div class="add-card">
+                        <button class="add-card-btn" onclick="showAddCardModal('in-progress')">
+                            <i class="fas fa-plus"></i> Добавить карточку
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Колонка Done -->
+                <div class="column" id="done">
+                    <div class="column-header">
+                        <h3><i class="fas fa-check-circle"></i> Done</h3>
+                        <span class="task-count">0 tasks</span>
+                    </div>
+                    <div class="tasks" ondragover="onDragOver(event)" ondrop="onDrop(event, 'done')">
+                        <!-- Карточки будут добавляться здесь -->
+                    </div>
+                    <div class="add-card">
+                        <button class="add-card-btn" onclick="showAddCardModal('done')">
+                            <i class="fas fa-plus"></i> Добавить карточку
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Модальное окно добавления карточки -->
+    <div class="modal-overlay" id="add-card-modal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Добавить карточку</h3>
+                <button class="modal-close" onclick="hideAddCardModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea 
+                    id="card-text" 
+                    placeholder="Введите текст карточки..." 
+                    rows="3"
+                ></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="addCard()">Добавить</button>
+                <button class="btn btn-secondary" onclick="hideAddCardModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования карточки -->
+    <div class="modal-overlay" id="edit-card-modal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Редактировать карточку</h3>
+                <button class="modal-close" onclick="hideEditCardModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea 
+                    id="edit-card-text" 
+                    placeholder="Введите текст карточки..." 
+                    rows="3"
+                ></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveCardEdit()">Сохранить</button>
+                <button class="btn btn-danger" onclick="deleteCard()">Удалить</button>
+                <button class="btn btn-secondary" onclick="hideEditCardModal()">Отмена</button>
             </div>
         </div>
     </div>
