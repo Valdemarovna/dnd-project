@@ -31,7 +31,9 @@ export function initApp() {
     
     // Добавляем несколько начальных задач
     addInitialTasks();
-    
+    document.body.addEventListener('dragover', function(e) {
+        // Предотвращаем стандартное поведение
+        e.preventDefault();
     console.log('Приложение инициализировано успешно!');
 }
 
@@ -80,6 +82,13 @@ function setupDragContainers() {
     const tasksContainers = document.querySelectorAll('.tasks');
     tasksContainers.forEach(container => {
         container.addEventListener('dragleave', onDragLeave);
+    });
+    
+    // Добавляем обработчики для самих колонок
+    const columns = document.querySelectorAll('.column');
+    columns.forEach(column => {
+        column.addEventListener('dragover', onDragOver);
+        column.addEventListener('dragleave', onDragLeave);
     });
 }
 
