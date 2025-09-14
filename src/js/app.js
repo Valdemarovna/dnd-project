@@ -1,9 +1,23 @@
-import { createTask, addCard, showAddCardModal, hideAddCardModal, showEditCardModal, hideEditCardModal, saveCardEdit, deleteCard, loadFromLocalStorage, saveToLocalStorage } from './card.js';
+import { 
+    createTask, 
+    addCard, 
+    showAddCardModal, 
+    hideAddCardModal, 
+    showEditCardModal, 
+    hideEditCardModal, 
+    saveCardEdit, 
+    deleteCard, 
+    loadFromLocalStorage, 
+    saveToLocalStorage,
+    setCurrentColumn,
+    getCurrentColumn,
+    setCurrentCard,
+    getCurrentCard
+} from './card.js';
+
 import { onDragStart, onDragOver, onDrop, onDragLeave, onDragEnd } from './dnd.js';
 
-// Глобальные переменные
-let currentColumn = null;
-let currentCard = null;
+// Убрали глобальные переменные, так как они теперь в card.js
 
 export function initApp() {
     // Инициализация глобальных функций
@@ -59,19 +73,26 @@ function setupEventListeners() {
     });
     
     // Сохранение по Enter
-    document.getElementById('card-text')?.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            addCard();
-        }
-    });
+    const cardText = document.getElementById('card-text');
+    const editCardText = document.getElementById('edit-card-text');
     
-    document.getElementById('edit-card-text')?.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            saveCardEdit();
-        }
-    });
+    if (cardText) {
+        cardText.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                addCard();
+            }
+        });
+    }
+    
+    if (editCardText) {
+        editCardText.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                saveCardEdit();
+            }
+        });
+    }
 }
 
 function addInitialTasks() {
@@ -111,21 +132,14 @@ export function updateTaskCounts() {
     });
 }
 
-export function setCurrentColumn(columnId) {
-    currentColumn = columnId;
-}
-
-export function getCurrentColumn() {
-    return currentColumn;
-}
-
-export function setCurrentCard(card) {
-    currentCard = card;
-}
-
-export function getCurrentCard() {
-    return currentCard;
-}
+// Экспортируем функции для использования в других модулях
+export { 
+    setCurrentColumn, 
+    getCurrentColumn, 
+    setCurrentCard, 
+    getCurrentCard,
+    saveToLocalStorage
+};
 
 // Инициализация приложения
 document.addEventListener('DOMContentLoaded', initApp);

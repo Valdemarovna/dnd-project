@@ -1,7 +1,7 @@
-import { updateTaskCounts, setCurrentColumn, getCurrentColumn, setCurrentCard, getCurrentCard } from './app.js';
+import { updateTaskCounts, saveToLocalStorage } from './app.js';
 import { onDragStart, onDragEnd } from './dnd.js';
 
-// Глобальные переменные
+// Глобальные переменные (убрали дубликаты из app.js)
 let currentColumn = null;
 let currentCard = null;
 
@@ -134,6 +134,7 @@ export function loadFromLocalStorage() {
     }
 }
 
+// Функции для работы с текущими элементами
 export function setCurrentColumn(columnId) {
     currentColumn = columnId;
 }
