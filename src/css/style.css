@@ -1,54 +1,104 @@
 /* src/css/style.css */
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  padding: 20px;
+  padding: 0;
   background-color: #f0f0f0;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .board {
   display: flex;
   gap: 20px;
   justify-content: center;
+  height: 100vh;
+  padding: 20px;
 }
 
 .column {
   background: #ebecf0;
   border-radius: 8px;
-  padding: 12px;
-  min-width: 250px;
-  min-height: 400px;
+  padding: 16px;
+  width: 300px;
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
 }
 
 .column h2 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
+  margin: 0 0 16px 0;
+  font-size: 18px;
   color: #172b4d;
+  font-weight: 600;
 }
 
 .cards-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 16px;
   min-height: 100px;
-  margin-bottom: 12px;
 }
 
 .card {
   background: white;
   border-radius: 4px;
-  padding: 8px;
+  padding: 12px;
   margin-bottom: 8px;
   cursor: grab;
   box-shadow: 0 1px 0 rgba(9, 30, 66, 0.25);
+  min-height: 40px;
+  word-wrap: break-word;
+  position: relative;
 }
 
 .card.dragging {
   opacity: 0.5;
 }
 
+.card.hidden {
+  display: none;
+}
+
+.card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: none;
+}
+
+.card:hover .card-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.edit-btn, .delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.edit-btn:hover {
+  background: #e9ecef;
+}
+
+.delete-btn:hover {
+  background: #dc3545;
+  color: white;
+}
+
 .card-placeholder {
   background: rgba(9, 30, 66, 0.04);
   border: 2px dashed #0079bf;
   border-radius: 4px;
-  height: 40px;
+  min-height: 40px;
   margin-bottom: 8px;
 }
 
@@ -57,12 +107,75 @@ body {
   border: none;
   color: #5e6c84;
   cursor: pointer;
-  padding: 8px;
+  padding: 8px 12px;
   width: 100%;
   text-align: left;
   border-radius: 4px;
+  font-size: 14px;
 }
 
 .add-card-btn:hover {
   background: rgba(9, 30, 66, 0.08);
+}
+
+.card-edit-textarea {
+  width: 100%;
+  min-height: 60px;
+  border: 1px solid #0079bf;
+  border-radius: 4px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.card-edit-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.save-btn, .cancel-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.save-btn {
+  background: #0079bf;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #026aa7;
+}
+
+.cancel-btn {
+  background: #6b778c;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #5a6a7c;
+}
+
+/* Стили для скроллбара */
+.cards-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cards-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.cards-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.cards-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
