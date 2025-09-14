@@ -2,20 +2,27 @@ import { updateTaskCounts } from './app.js';
 
 let draggedItem = null;
 let dragGhost = null;
+let currentContainer = null;
+let placeholder = null;
 
 export function onDragStart(event) {
     draggedItem = event.target;
     draggedItem.classList.add('dragging');
     
-    // Создаем полноразмерный силует
-    createDragGhost(event);
+    // Создаем плейсхолдер для оригинальной позиции
+    createPlaceholder();
+    
+    // Создаем силует
+    createDragGhost();
     
     // Устанавливаем данные для переноса
     event.dataTransfer.setData('text/plain', 'drag');
     event.dataTransfer.effectAllowed = 'move';
     
-    // Используем кастомное изображение для drag
-    event.dataTransfer.setDragImage(dragGhost, 0, 0);
+    // Используем прозрачное изображение для drag
+    const transparentPixel = new Image();
+    transparentPixel.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    event.dataTransfer.setDragImage(transparentPixel, 0, 0);
 }
 
 export function onDragOver(event) {
@@ -23,14 +30,16 @@ export function onDragOver(event) {
     
     const tasksContainer = event.target.closest('.tasks');
     if (tasksContainer) {
+        currentContainer = tasksContainer;
+        
         // Подсвечиваем контейнер
-        tasksContainer.classList.add('drag-over');
+        highlightContainer(tasksContainer);
         
-        // Показываем индикатор позиции
-        showDropIndicator(tasksContainer, event.clientY);
+        // Показываем силует на предполагаемой позиции
+        showGhostAtPosition(tasksContainer, event.clientY);
         
-        // Обновляем позицию силуета
-        updateGhostPosition(tasksContainer, event.clientY);
+        // Обновляем плейсхолдер
+        updatePlaceholder(tasksContainer, event.clientY);
     }
 }
 
@@ -39,12 +48,10 @@ export function onDrop(event) {
     
     const tasksContainer = event.target.closest('.tasks');
     if (tasksContainer && draggedItem) {
-        // Определяем позицию для вставки
-        const afterElement = getDragAfterElement(tasksContainer, event.clientY);
-        
-        // Вставляем элемент
-        if (afterElement) {
-            tasksContainer.insertBefore(draggedItem, afterElement);
+        // Вставляем элемент на место плейсхолдера
+        if (placeholder && placeholder.parentNode) {
+            tasksContainer.insertBefore(draggedItem, placeholder);
+            placeholder.remove();
         } else {
             tasksContainer.appendChild(draggedItem);
         }
@@ -67,65 +74,106 @@ export function onDragEnd() {
     cleanupDragState();
 }
 
-function createDragGhost(event) {
-    // Создаем копию элемента для силуета
+function createPlaceholder() {
+    placeholder = document.createElement('div');
+    placeholder.className = 'drop-placeholder';
+    placeholder.style.height = `${draggedItem.offsetHeight}px`;
+    placeholder.style.margin = '8px 0';
+    placeholder.style.borderRadius = '8px';
+    placeholder.style.background = 'rgba(0, 121, 191, 0.1)';
+    placeholder.style.border = '2px dashed #0079bf';
+}
+
+function createDragGhost() {
+    // Создаем точную копию перетаскиваемого элемента
     dragGhost = draggedItem.cloneNode(true);
     dragGhost.classList.add('drag-ghost');
     dragGhost.style.position = 'fixed';
-    dragGhost.style.left = '-9999px'; // Прячем за экраном
-    dragGhost.style.top = '-9999px';
-    dragGhost.style.width = `${draggedItem.offsetWidth}px`;
-    dragGhost.style.opacity = '0.8';
-    dragGhost.style.zIndex = '10000';
+    dragGhost.style.opacity = '0';
     dragGhost.style.pointerEvents = 'none';
-    dragGhost.style.transform = 'rotate(5deg)';
-    dragGhost.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+    dragGhost.style.zIndex = '10000';
+    dragGhost.style.width = `${draggedItem.offsetWidth}px`;
+    dragGhost.style.cursor = 'grabbing';
+    
+    // Прячем оригинальные действия
+    const actions = dragGhost.querySelector('.task-actions');
+    if (actions) {
+        actions.style.display = 'none';
+    }
+    
+    // Стилизуем силует
+    dragGhost.style.background = 'rgba(255, 255, 255, 0.95)';
+    dragGhost.style.border = '2px solid #0079bf';
+    dragGhost.style.borderRadius = '8px';
+    dragGhost.style.boxShadow = '0 12px 40px rgba(0, 121, 191, 0.4)';
+    dragGhost.style.transform = 'rotate(3deg) scale(1.05)';
     
     document.body.appendChild(dragGhost);
 }
 
-function updateGhostPosition(container, y) {
+function showGhostAtPosition(container, y) {
     if (!dragGhost) return;
     
-    // Показываем силует на предполагаемой позиции
     const afterElement = getDragAfterElement(container, y);
     const containerRect = container.getBoundingClientRect();
     
+    let ghostTop = 0;
+    let ghostLeft = containerRect.left;
+    
     if (afterElement) {
         const elementRect = afterElement.getBoundingClientRect();
-        dragGhost.style.top = `${elementRect.top - containerRect.top}px`;
-        dragGhost.style.left = '0';
+        ghostTop = elementRect.top - 4; // Немного выше элемента
     } else {
-        // Если в конец, позиционируем внизу
-        dragGhost.style.top = `${container.scrollHeight - 60}px`;
-        dragGhost.style.left = '0';
+        // Позиция в конце контейнера
+        const lastElement = container.lastElementChild;
+        if (lastElement && lastElement.classList.contains('task')) {
+            const lastRect = lastElement.getBoundingClientRect();
+            ghostTop = lastRect.bottom + 8;
+        } else {
+            ghostTop = containerRect.top + 20;
+        }
     }
     
-    // Показываем силует
-    dragGhost.style.display = 'block';
+    // Позиционируем силует
+    dragGhost.style.position = 'fixed';
+    dragGhost.style.top = `${ghostTop}px`;
+    dragGhost.style.left = `${ghostLeft}px`;
+    dragGhost.style.opacity = '0.9';
 }
 
-function showDropIndicator(container, y) {
-    removeDropIndicator();
+function updatePlaceholder(container, y) {
+    if (!placeholder) return;
     
     const afterElement = getDragAfterElement(container, y);
-    const indicator = document.createElement('div');
-    indicator.className = 'drop-indicator';
     
+    // Удаляем старый плейсхолдер
+    const oldPlaceholder = container.querySelector('.drop-placeholder');
+    if (oldPlaceholder) {
+        oldPlaceholder.remove();
+    }
+    
+    // Вставляем новый плейсхолдер
     if (afterElement) {
-        container.insertBefore(indicator, afterElement);
+        container.insertBefore(placeholder, afterElement);
     } else {
-        container.appendChild(indicator);
+        container.appendChild(placeholder);
     }
 }
 
-function removeDropIndicator() {
-    const indicators = document.querySelectorAll('.drop-indicator');
-    indicators.forEach(indicator => indicator.remove());
+function highlightContainer(container) {
+    // Убираем подсветку со всех контейнеров
+    document.querySelectorAll('.tasks').forEach(cont => {
+        cont.classList.remove('drag-over');
+    });
+    
+    // Подсвечиваем текущий контейнер
+    container.classList.add('drag-over');
 }
 
 function getDragAfterElement(container, y) {
     const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
+    
+    if (draggableElements.length === 0) return null;
     
     return draggableElements.reduce((closest, child) => {
         const box = child.getBoundingClientRect();
@@ -140,18 +188,21 @@ function getDragAfterElement(container, y) {
 }
 
 function cleanupDragState() {
-    // Убираем подсветку со всех контейнеров
+    // Убираем подсветку
     document.querySelectorAll('.tasks').forEach(container => {
         container.classList.remove('drag-over');
     });
-    
-    // Удаляем индикаторы
-    removeDropIndicator();
     
     // Удаляем силует
     if (dragGhost) {
         dragGhost.remove();
         dragGhost = null;
+    }
+    
+    // Удаляем плейсхолдер
+    if (placeholder) {
+        placeholder.remove();
+        placeholder = null;
     }
     
     // Восстанавливаем оригинальный элемент
@@ -160,6 +211,8 @@ function cleanupDragState() {
         draggedItem.style.opacity = '1';
         draggedItem = null;
     }
+    
+    currentContainer = null;
 }
 
 // Глобальные функции
