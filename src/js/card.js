@@ -1,20 +1,29 @@
 import { updateTaskCounts, setCurrentColumn, getCurrentColumn, setCurrentCard, getCurrentCard } from './app.js';
+import { onDragStart, onDragEnd } from './dnd.js';
 
 export function createTask(text) {
     const task = document.createElement('div');
     task.className = 'task';
     task.draggable = true;
     task.addEventListener('dragstart', onDragStart);
-    task.addEventListener('dragend', onDragEnd); // Добавляем обработчик завершения
+    task.addEventListener('dragend', onDragEnd);
     
     task.innerHTML = `
         <div class="task-text">${text}</div>
         <div class="task-actions">
-            <button class="delete-btn" onclick="event.stopPropagation(); deleteCard(this.parentElement.parentElement)">
+            <button class="delete-btn" onclick="event.stopPropagation(); handleDeleteCard(this.parentElement.parentElement)">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
     `;
+    
+    // Добавляем обработчик клика для редактирования
+    task.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('delete-btn')) {
+            const text = this.querySelector('.task-text').textContent;
+            showEditCardModal(this, text);
+        }
+    });
     
     return task;
 }
@@ -77,6 +86,12 @@ export function deleteCard() {
     }
 }
 
+// Вспомогательная функция для удаления карточки
+function handleDeleteCard(card) {
+    setCurrentCard(card);
+    deleteCard();
+}
+
 // Глобальные функции для HTML
 window.showAddCardModal = showAddCardModal;
 window.hideAddCardModal = hideAddCardModal;
@@ -85,3 +100,4 @@ window.showEditCardModal = showEditCardModal;
 window.hideEditCardModal = hideEditCardModal;
 window.saveCardEdit = saveCardEdit;
 window.deleteCard = deleteCard;
+window.handleDeleteCard = handleDeleteCard;

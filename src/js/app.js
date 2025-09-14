@@ -6,12 +6,14 @@ let currentColumn = null;
 let currentCard = null;
 
 export function initApp() {
-    // Инициализация глобальных функций
+    // Инициализация глобальных функций Drag&Drop
     window.onDragStart = onDragStart;
     window.onDragOver = onDragOver;
     window.onDrop = onDrop;
     window.onDragLeave = onDragLeave;
-    window.onDragEnd = onDragEnd; // Добавляем обработчик завершения
+    window.onDragEnd = onDragEnd;
+    
+    // Инициализация глобальных функций для карточек
     window.showAddCardModal = showAddCardModal;
     window.hideAddCardModal = hideAddCardModal;
     window.addCard = addCard;
@@ -19,25 +21,68 @@ export function initApp() {
     window.hideEditCardModal = hideEditCardModal;
     window.saveCardEdit = saveCardEdit;
     window.deleteCard = deleteCard;
+    window.handleDeleteCard = handleDeleteCard;
 
-    // Добавляем обработчики событий для карточек
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('task') || e.target.closest('.task')) {
-            const task = e.target.classList.contains('task') ? e.target : e.target.closest('.task');
-            const text = task.querySelector('.task-text').textContent;
-            showEditCardModal(task, text);
+    // Добавляем обработчики событий для модальных окон
+    setupModalEventListeners();
+    
+    // Добавляем обработчики dragleave для всех контейнеров
+    setupDragContainers();
+    
+    // Добавляем несколько начальных задач
+    addInitialTasks();
+    
+    console.log('Приложение инициализировано успешно!');
+}
+
+function setupModalEventListeners() {
+    // Закрытие модальных окон по клику на overlay
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                if (this.id === 'add-card-modal') {
+                    hideAddCardModal();
+                } else if (this.id === 'edit-card-modal') {
+                    hideEditCardModal();
+                }
+            }
+        });
+    });
+    
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (document.getElementById('add-card-modal').style.display === 'flex') {
+                hideAddCardModal();
+            } else if (document.getElementById('edit-card-modal').style.display === 'flex') {
+                hideEditCardModal();
+            }
         }
     });
+    
+    // Сохранение по Enter в текстовых полях
+    document.getElementById('card-text')?.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            addCard();
+        }
+    });
+    
+    document.getElementById('edit-card-text')?.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            saveCardEdit();
+        }
+    });
+}
 
-    // Добавляем обработчики dragleave для всех контейнеров
+function setupDragContainers() {
     const tasksContainers = document.querySelectorAll('.tasks');
     tasksContainers.forEach(container => {
         container.addEventListener('dragleave', onDragLeave);
     });
-
-    // Добавляем несколько начальных задач
-    addInitialTasks();
 }
+
 function addInitialTasks() {
     const initialTasks = [
         { text: 'Изучить JavaScript', column: 'todo' },
@@ -52,13 +97,18 @@ function addInitialTasks() {
         const taskElement = createTask(task.text);
         document.querySelector(`#${task.column} .tasks`).appendChild(taskElement);
     });
+    
+    updateTaskCounts();
 }
 
 export function updateTaskCounts() {
     const columns = ['todo', 'in-progress', 'done'];
     columns.forEach(columnId => {
         const taskCount = document.querySelector(`#${columnId} .tasks`).children.length;
-        document.querySelector(`#${columnId} .task-count`).textContent = `${taskCount} tasks`;
+        const countElement = document.querySelector(`#${columnId} .task-count`);
+        if (countElement) {
+            countElement.textContent = `${taskCount} tasks`;
+        }
     });
 }
 
@@ -77,3 +127,6 @@ export function setCurrentCard(card) {
 export function getCurrentCard() {
     return currentCard;
 }
+
+// Инициализация приложения при загрузке DOM
+document.addEventListener('DOMContentLoaded', initApp);
