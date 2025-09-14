@@ -5,8 +5,11 @@ export function createTask(text) {
     const task = document.createElement('div');
     task.className = 'task';
     task.draggable = true;
-    task.setAttribute('ondragstart', 'onDragStart(event)');
-    task.setAttribute('ondragend', 'onDragEnd(event)');
+    
+    // Добавляем обработчики напрямую
+    task.addEventListener('dragstart', onDragStart);
+    task.addEventListener('dragend', onDragEnd);
+    task.addEventListener('click', handleTaskClick);
     
     task.innerHTML = `
         <div class="task-text">${text}</div>
@@ -19,6 +22,7 @@ export function createTask(text) {
     
     return task;
 }
+
 
 export function showAddCardModal(columnId) {
     setCurrentColumn(columnId);
@@ -82,6 +86,14 @@ export function deleteCard() {
 function handleDeleteCard(card) {
     setCurrentCard(card);
     deleteCard();
+}
+
+function handleTaskClick(event) {
+    if (!event.target.classList.contains('delete-btn')) {
+        const task = event.currentTarget;
+        const text = task.querySelector('.task-text').textContent;
+        showEditCardModal(task, text);
+    }
 }
 
 // Глобальные функции для HTML
