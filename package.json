@@ -4,6 +4,7 @@
         "regenerator-runtime": "^0.14.1"
     },
     "devDependencies": {
+        "copy-webpack-plugin": "^13.0.1",
         "css-loader": "^7.1.2",
         "file-loader": "^6.2.0",
         "gh-pages": "^6.3.0",
@@ -21,9 +22,8 @@
         "build": "webpack --mode=production",
         "deploy": "gh-pages -d dist",
         "dev": "webpack serve --mode=development",
-        "predeploy": "npm run build",
-		"deploy": "gh-pages -d dist"
+        "predeploy": "npm run build"
     },
-	"homepage": "https://valdemarovna.github.io/dnd-project/",
+    "homepage": "https://valdemarovna.github.io/dnd-project/",
     "version": "1.0.0"
 }
