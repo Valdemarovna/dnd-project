@@ -5,8 +5,8 @@ export function createTask(text) {
     const task = document.createElement('div');
     task.className = 'task';
     task.draggable = true;
-    task.addEventListener('dragstart', onDragStart);
-    task.addEventListener('dragend', onDragEnd);
+    task.setAttribute('ondragstart', 'onDragStart(event)');
+    task.setAttribute('ondragend', 'onDragEnd(event)');
     
     task.innerHTML = `
         <div class="task-text">${text}</div>
@@ -16,14 +16,6 @@ export function createTask(text) {
             </button>
         </div>
     `;
-    
-    // Добавляем обработчик клика для редактирования
-    task.addEventListener('click', function(e) {
-        if (!e.target.classList.contains('delete-btn')) {
-            const text = this.querySelector('.task-text').textContent;
-            showEditCardModal(this, text);
-        }
-    });
     
     return task;
 }
