@@ -10,6 +10,7 @@
         "gh-pages": "^6.3.0",
         "html-loader": "^5.1.0",
         "html-webpack-plugin": "^5.6.4",
+        "jest": "^30.1.3",
         "style-loader": "^4.0.0",
         "webpack": "^5.101.3",
         "webpack-cli": "^6.0.1",
@@ -23,12 +24,12 @@
         "deploy": "gh-pages -d dist",
         "dev": "webpack serve --mode=development",
         "predeploy": "npm run build",
-		"show:dist": "http-server dist",
-		"lint": "eslint . --fix",
-		"test": "jest",
-		"coverage": "jest --coverage",
-		"preshow:coverage": "npm run coverage",
-		"show:coverage": "live-server coverage/lcov-report"
+        "show:dist": "http-server dist",
+        "lint": "eslint . --fix",
+        "test": "jest",
+        "coverage": "jest --coverage",
+        "preshow:coverage": "npm run coverage",
+        "show:coverage": "live-server coverage/lcov-report"
     },
     "homepage": "https://valdemarovna.github.io/dnd-project/",
     "version": "1.0.0"
