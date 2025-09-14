@@ -1,7 +1,7 @@
-import { updateTaskCounts, saveToLocalStorage } from './app.js';
+import { updateTaskCounts } from './app.js';
 import { onDragStart, onDragEnd } from './dnd.js';
 
-// Глобальные переменные (убрали дубликаты из app.js)
+// Глобальные переменные
 let currentColumn = null;
 let currentCard = null;
 
@@ -101,7 +101,8 @@ function handleDeleteCard(card) {
     deleteCard();
 }
 
-export function saveToLocalStorage() {
+// Переименуем функцию чтобы избежать конфликта
+function saveToLocalStorage() {
     const columns = ['todo', 'in-progress', 'done'];
     const data = {};
     

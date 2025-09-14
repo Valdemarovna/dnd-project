@@ -7,8 +7,7 @@ import {
     hideEditCardModal, 
     saveCardEdit, 
     deleteCard, 
-    loadFromLocalStorage, 
-    saveToLocalStorage,
+    loadFromLocalStorage,
     setCurrentColumn,
     getCurrentColumn,
     setCurrentCard,
@@ -16,8 +15,6 @@ import {
 } from './card.js';
 
 import { onDragStart, onDragOver, onDrop, onDragLeave, onDragEnd } from './dnd.js';
-
-// Убрали глобальные переменные, так как они теперь в card.js
 
 export function initApp() {
     // Инициализация глобальных функций
@@ -115,6 +112,7 @@ function addInitialTasks() {
             document.querySelector(`#${task.column} .tasks`).appendChild(taskElement);
         });
         
+        // Сохраняем в localStorage
         saveToLocalStorage();
     }
     
@@ -132,13 +130,27 @@ export function updateTaskCounts() {
     });
 }
 
+// Функция для сохранения в localStorage
+export function saveToLocalStorage() {
+    const columns = ['todo', 'in-progress', 'done'];
+    const data = {};
+    
+    columns.forEach(columnId => {
+        const tasks = document.querySelectorAll(`#${columnId} .task`);
+        data[columnId] = Array.from(tasks).map(task => 
+            task.querySelector('.task-text').textContent
+        );
+    });
+    
+    localStorage.setItem('trelloBoard', JSON.stringify(data));
+}
+
 // Экспортируем функции для использования в других модулях
 export { 
     setCurrentColumn, 
     getCurrentColumn, 
     setCurrentCard, 
-    getCurrentCard,
-    saveToLocalStorage
+    getCurrentCard
 };
 
 // Инициализация приложения
