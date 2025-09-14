@@ -58,4 +58,29 @@ export function hideEditCardModal() {
 }
 
 export function saveCardEdit() {
-    const text
+    const textarea = document.getElementById('edit-card-text');
+    const text = textarea.value.trim();
+    
+    if (text && getCurrentCard()) {
+        getCurrentCard().querySelector('.task-text').textContent = text;
+        hideEditCardModal();
+    }
+}
+
+export function deleteCard() {
+    const card = getCurrentCard();
+    if (card && card.parentElement) {
+        card.parentElement.removeChild(card);
+        updateTaskCounts();
+        hideEditCardModal();
+    }
+}
+
+// Глобальные функции для HTML
+window.showAddCardModal = showAddCardModal;
+window.hideAddCardModal = hideAddCardModal;
+window.addCard = addCard;
+window.showEditCardModal = showEditCardModal;
+window.hideEditCardModal = hideEditCardModal;
+window.saveCardEdit = saveCardEdit;
+window.deleteCard = deleteCard;
