@@ -22,7 +22,13 @@
         "build": "webpack --mode=production",
         "deploy": "gh-pages -d dist",
         "dev": "webpack serve --mode=development",
-        "predeploy": "npm run build"
+        "predeploy": "npm run build",
+		"show:dist": "http-server dist",
+		"lint": "eslint . --fix",
+		"test": "jest",
+		"coverage": "jest --coverage",
+		"preshow:coverage": "npm run coverage",
+		"show:coverage": "live-server coverage/lcov-report"
     },
     "homepage": "https://valdemarovna.github.io/dnd-project/",
     "version": "1.0.0"
