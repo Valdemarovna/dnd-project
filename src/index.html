@@ -3,152 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trello-like Board</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Drag'n'Drop Kanban</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <div class="board" id="board">
-            <!-- Колонка TODO -->
-            <div class="column" id="todo">
-                <div class="column-header">
-                    <h3><i class="fas fa-list-ul"></i> TODO</h3>
+        <div class="column" data-column="todo">
+            <div class="column-header">
+                <h2 class="column-title">To Do</h2>
+                <button class="add-card-btn" data-column="todo">+</button>
+            </div>
+            <div class="cards-container">
+                <div class="card" draggable="true" data-id="1">
+                    <div class="card-content">Задача 1</div>
+                    <button class="edit-card-btn">✏️</button>
+					<button class="delete-card-btn" title="Удалить"></button>
                 </div>
-                <div class="tasks" id="tasks-todo" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">
-                    <!-- Карточки будут добавляться здесь -->
-                    <div class="task" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
-                        <div class="task-text">Изучить JavaScript</div>
-                        <div class="task-actions">
-                            <button class="delete-btn" onclick="event.stopPropagation(); deleteCard(this.parentElement.parentElement)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="task" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
-                        <div class="task-text">Сделать ДЗ по Webpack</div>
-                        <div class="task-actions">
-                            <button class="delete-btn" onclick="event.stopPropagation(); deleteCard(this.parentElement.parentElement)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="task" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
-                        <div class="task-text">Настроить GitHub Actions</div>
-                        <div class="task-actions">
-                            <button class="delete-btn" onclick="event.stopPropagation(); deleteCard(this.parentElement.parentElement)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="add-card">
-                    <button class="add-card-btn" onclick="showAddCardModal('todo')">
-                        <i class="fas fa-plus"></i> Добавить карточку
-                    </button>
+                <div class="card" draggable="true" data-id="2">
+                    <div class="card-content">Задача 2</div>
+                    <button class="edit-card-btn">✏️</button>
+					<button class="delete-card-btn" title="Удалить"></button>
                 </div>
             </div>
-
-            <!-- Колонка In Progress -->
-            <div class="column" id="in-progress">
-                <div class="column-header">
-                    <h3><i class="fas fa-spinner"></i> In Progress</h3>
-                </div>
-                <div class="tasks" id="tasks-progress" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">
-                    <!-- Карточки будут добавляться здесь -->
-                    <div class="task" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
-                        <div class="task-text">Разработать интерфейс</div>
-                        <div class="task-actions">
-                            <button class="delete-btn" onclick="event.stopPropagation(); deleteCard(this.parentElement.parentElement)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="task" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
-                        <div class="task-text">Протестировать функционал</div>
-                        <div class="task-actions">
-                            <button class="delete-btn" onclick="event.stopPropagation(); deleteCard(this.parentElement.parentElement)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="add-card">
-                    <button class="add-card-btn" onclick="showAddCardModal('in-progress')">
-                        <i class="fas fa-plus"></i> Добавить карточку
-                    </button>
+        </div>
+        
+        <div class="column" data-column="in-progress">
+            <div class="column-header">
+                <h2 class="column-title">In Progress</h2>
+                <button class="add-card-btn" data-column="in-progress">+</button>
+            </div>
+            <div class="cards-container">
+                <div class="card" draggable="true" data-id="3">
+                    <div class="card-content">Задача 3</div>
+                    <button class="edit-card-btn">✏️</button>
+					<button class="delete-card-btn" title="Удалить"></button>
                 </div>
             </div>
-
-            <!-- Колонка Done -->
-            <div class="column" id="done">
-                <div class="column-header">
-                    <h3><i class="fas fa-check-circle"></i> Done</h3>
-                </div>
-                <div class="tasks" id="tasks-done" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">
-                    <!-- Карточки будут добавляться здесь -->
-                    <div class="task" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
-                        <div class="task-text">Завершить проект</div>
-                        <div class="task-actions">
-                            <button class="delete-btn" onclick="event.stopPropagation(); deleteCard(this.parentElement.parentElement)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="add-card">
-                    <button class="add-card-btn" onclick="showAddCardModal('done')">
-                        <i class="fas fa-plus"></i> Добавить карточку
-                    </button>
+        </div>
+        
+        <div class="column" data-column="done">
+            <div class="column-header">
+                <h2 class="column-title">Done</h2>
+                <button class="add-card-btn" data-column="done">+</button>
+            </div>
+            <div class="cards-container">
+                <div class="card" draggable="true" data-id="4">
+                    <div class="card-content">Задача 4</div>
+                    <button class="edit-card-btn">✏️</button>
+					<button class="delete-card-btn" title="Удалить"></button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно добавления карточки -->
-    <div class="modal-overlay" id="add-card-modal" style="display: none;">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Добавить карточку</h3>
-                <button class="modal-close" onclick="hideAddCardModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <textarea 
-                    id="card-text" 
-                    placeholder="Введите текст карточки..." 
-                    rows="3"
-                ></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="addCard()">Добавить</button>
-                <button class="btn btn-secondary" onclick="hideAddCardModal()">Отмена</button>
+    <!-- Модальное окно для добавления/редактирования -->
+    <div class="modal" id="cardModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Добавить задачу</h3>
+            <textarea id="cardText" placeholder="Введите текст задачи..." rows="4"></textarea>
+            <div class="modal-actions">
+                <button id="cancelBtn">Отмена</button>
+                <button id="saveBtn">Сохранить</button>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно редактирования карточки -->
-    <div class="modal-overlay" id="edit-card-modal" style="display: none;">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Редактировать карточку</h3>
-                <button class="modal-close" onclick="hideEditCardModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <textarea 
-                    id="edit-card-text" 
-                    placeholder="Введите текст карточки..." 
-                    rows="3"
-                ></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="saveCardEdit()">Сохранить</button>
-                <button class="btn btn-danger" onclick="deleteCard()">Удалить</button>
-                <button class="btn btn-secondary" onclick="hideEditCardModal()">Отмена</button>
-            </div>
-        </div>
-    </div>
+    <script src="app.js"></script>
 </body>
 </html>
