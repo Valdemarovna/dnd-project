@@ -34,6 +34,10 @@ export class DnDManager {
     document.addEventListener('dragleave', this.handleDragLeave.bind(this));
     document.addEventListener('drop', this.handleDrop.bind(this));
 
+    // Touch events для мобильных устройств
+    document.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+    document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+    document.addEventListener('touchend', this.handleTouchEnd.bind(this));
   }
 
   handleDragStart(e) {
@@ -116,9 +120,9 @@ export class DnDManager {
     this.ghostElement.style.width = `${this.draggedItemRect.width}px`;
     this.ghostElement.style.height = `${this.draggedItemRect.height}px`;
     
-    // Вставляем ghost элемент
+    // Вставляем ghost элемент с помощью before/after
     if (afterElement) {
-      cardsContainer.insertBefore(this.ghostElement, afterElement);
+      afterElement.before(this.ghostElement);
     } else {
       cardsContainer.append(this.ghostElement);
     }
@@ -197,9 +201,9 @@ export class DnDManager {
       this.draggedItem.style.opacity = '1';
       this.draggedItem.classList.remove('dragging');
       
-      // Вставляем карточку на новое место
+      // Вставляем карточку на новое место с помощью before/after
       if (afterElement) {
-        cardsContainer.insertBefore(this.draggedItem, afterElement);
+        afterElement.before(this.draggedItem);
       } else {
         cardsContainer.append(this.draggedItem);
       }
@@ -210,4 +214,5 @@ export class DnDManager {
       this.cleanupDrag();
     }
   }
+
 }
