@@ -1,1 +1,1 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/github/Valdemarovna/dnd-project?svg=true)](https://ci.appveyor.com/api/projects/status/github/Valdemarovna/dnd-project)
+[![Build status](https://ci.appveyor.com/api/projects/status/v27k4yngsvrhb39w?svg=true)](https://ci.appveyor.com/project/Valdemarovna/dnd-project)
