@@ -5,6 +5,7 @@
   "repository": "https://github.com/Valdemarovna/dnd-project.git",
   "author": "Valdemarovna",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "start": "webpack serve --mode development --open",
     "build": "webpack --mode production",

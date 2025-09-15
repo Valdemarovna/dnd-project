@@ -1,10 +1,15 @@
-import { defineConfig } from "eslint/config";
-
-export default defineConfig([
-	{
-		rules: {
-			semi: "error",
-			"prefer-const": "error",
-		},
-	},
-]);
+module.exports = {
+  env: {
+    browser: true,
+    es2021: true,
+  },
+  extends: 'airbnb-base',
+  overrides: [
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  rules: {
+  },
+};
